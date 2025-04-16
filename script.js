@@ -1,52 +1,49 @@
-const player = document.querySelector('.player');
-const video = player.querySelector('.viewer');
-const progress = player.querySelector('.progress');
-const progressBar = player.querySelector('.progress__filled');
-const toggle = player.querySelector('.toggle');
-const skipButtons = player.querySelectorAll('[data-skip]');
-const volumeSlider = player.querySelector('.volume');
-const speedSlider = player.querySelector('.playbackSpeed');
+// Get DOM elements
+const video = document.querySelector('video');
+const playButton = document.querySelector('.player__button');
+const volumeSlider = document.querySelector('input[name="volume"]');
+const speedSlider = document.querySelector('input[name="playbackSpeed"]');
+const rewindButton = document.querySelector('[data-skip="-10"]');
+const forwardButton = document.querySelector('[data-skip="25"]');
+const progress = document.querySelector('.progress');
+const progressFilled = document.querySelector('.progress__filled');
 
 // Toggle play/pause
 function togglePlay() {
-  video.paused ? video.play() : video.pause();
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
 }
 
-// Update play/pause button
+// Update play button icon
 function updateButton() {
-  toggle.textContent = video.paused ? '►' : '❚ ❚';
+  playButton.textContent = video.paused ? '►' : '❚ ❚';
 }
 
-// Skip forward or backward
-function skip() {
-  video.currentTime += parseFloat(this.dataset.skip);
-}
-
-// Handle range updates (volume and playback speed)
+// Handle volume and playback speed changes
 function handleRangeUpdate() {
   video[this.name] = this.value;
 }
 
-// Update progress bar as video plays
-function handleProgress() {
-  const percent = (video.currentTime / video.duration) * 100;
-  progressBar.style.flexBasis = `${percent}%`;
+// Skip video
+function skip() {
+  video.currentTime += parseFloat(this.dataset.skip);
 }
 
-// Scrub video on progress bar click
+// Update progress bar
+function handleProgress() {
+  const percent = (video.currentTime / video.duration) * 100;
+  progressFilled.style.flexBasis = `${percent}%`;
+}
+
+// Scrub (click and drag progress bar)
 function scrub(e) {
   const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
   video.currentTime = scrubTime;
 }
 
 // Event listeners
-video.addEventListener('click', togglePlay);
-video.addEventListener('play', updateButton);
-video.addEventListener('pause', updateButton);
-video.addEventListener('timeupdate', handleProgress);
+video.addEventListener('click', toggle
 
-toggle.addEventListener('click', togglePlay);
-skipButtons.forEach(button => button.addEventListener('click', skip));
-volumeSlider.addEventListener('input', handleRangeUpdate);
-speedSlider.addEventListener('input', handleRangeUpdate);
-progress.addEventListener('click', scrub);
